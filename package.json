@@ -1,0 +1,19 @@
+{
+  "name": "sip.js-test-attd-xfer",
+  "version": "1.0.0",
+  "description": "sip.js-test-attd-xfer =====================",
+  "main": "index.js",
+  "scripts": {
+    "test": "beefy index.js --live --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joseph-onsip/sip.js-test-attd-xfer.git"
+  },
+  "author": "Joseph Frazier <joseph@onsip.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joseph-onsip/sip.js-test-attd-xfer/issues"
+  },
+  "homepage": "https://github.com/joseph-onsip/sip.js-test-attd-xfer"
+}
