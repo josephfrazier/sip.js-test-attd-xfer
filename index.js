@@ -11,18 +11,18 @@ global.uris = {
 var streamPromise = SIP.WebRTC.isSupported() && SIP.WebRTC.getUserMedia({audio: true});
 
 streamPromise.then(function (stream) {
-  global.referer = buildUA(uris.referer);
+  global.referer = buildUA(uris.referer, stream);
   referer.on('registered', function () {
 
-    global.referee = buildUA(uris.referee);
+    global.referee = buildUA(uris.referee, stream);
     referee.on('registered', function () {
 
-      global.referTarget = buildUA(uris.referTarget);
+      global.referTarget = buildUA(uris.referTarget, stream);
       referTarget.on('registered', function () {
 
-        invite(referer, uris.referee).on('accepted', function () {
+        invite(referer, uris.referee, stream).on('accepted', function () {
           var refereeSession = this;
-          invite(referer, uris.referTarget).on('accepted', function () {
+          invite(referer, uris.referTarget, stream).on('accepted', function () {
             var targetSession = this;
             refereeSession.off('refer');
             refereeSession.refer(targetSession);
@@ -31,8 +31,9 @@ streamPromise.then(function (stream) {
       });
     });
   });
+});
 
-  function buildUA (uri) {
+  function buildUA (uri, stream) {
     return new SIP.UA({
       traceSip: true,
       uri: uri,
@@ -57,16 +58,13 @@ streamPromise.then(function (stream) {
     })
   }
 
-  function invite(from, to) {
+  function invite(from, to, stream) {
     return from.invite(to, {
       media: {
         stream: stream
       }
     });
   }
-
-  global.invite = invite;
-});
 
 global.stop = function () {
   referer.stop();
