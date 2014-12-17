@@ -25,22 +25,18 @@ streamPromise.then(function (stream) {
           session.accept({media: {stream: stream}}).on('accepted', function () {
             var refereeSession = this;
 
-            var replacee = invite(referTarget, uris.referer, stream)
+            invite(referTarget, uris.referer, stream);
             referer.once('invite', function (session) {
               session.accept({media: {stream: stream}}).on('accepted', function () {
                 var targetSession = this;
 
-                replacee.on('replace', replacee.followReplaces(
-                  function onReplaced () {
-                    console.trace('onReplaced', arguments);
+                referTarget.once('invite', function onInvite (session) {
+                  if (confirm()) {
+                    session.accept();
+                  } else {
+                    session.reject();
                   }
-                  /*
-                  , function beforeCallback (request, session, accept, reject) {
-                    console.trace('beforeCallback', arguments);
-                    reject()
-                  }
-                  */
-                ));
+                });
                 refereeSession.off('refer');
                 refereeSession.refer(targetSession);
               });
