@@ -25,10 +25,22 @@ streamPromise.then(function (stream) {
           session.accept({media: {stream: stream}}).on('accepted', function () {
             var refereeSession = this;
 
-            invite(referTarget, uris.referer, stream)
+            var replacee = invite(referTarget, uris.referer, stream)
             referer.once('invite', function (session) {
               session.accept({media: {stream: stream}}).on('accepted', function () {
                 var targetSession = this;
+
+                replacee.on('replace', replacee.followReplaces(
+                  function onReplaced () {
+                    console.trace('onReplaced', arguments);
+                  }
+                  /*
+                  , function beforeCallback (request, session, accept, reject) {
+                    console.trace('beforeCallback', arguments);
+                    reject()
+                  }
+                  */
+                ));
                 refereeSession.off('refer');
                 refereeSession.refer(targetSession);
               });
@@ -42,7 +54,7 @@ streamPromise.then(function (stream) {
 
   function buildUA (uri, stream) {
     var options = {
-      //replaces: SIP.C.supported.UNSUPPORTED,
+      replaces: SIP.C.supported.SUPPORTED,
       traceSip: true
     };
     if (uri) {
@@ -62,6 +74,8 @@ streamPromise.then(function (stream) {
     session.on('refer', session.followRefer(function (newSession) {
       console.trace('XXX followed refer to', newSession);
     }));
+
+    return session;
   }
 
 global.stop = function () {
